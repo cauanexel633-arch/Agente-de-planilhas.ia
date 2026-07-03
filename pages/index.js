@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { supabaseAdmin } from '../lib/supabaseAdmin'
 import { generateUniqueCode } from '../lib/codeGenerator'
 import Sidebar from '../components/Sidebar'
 import UserBadge from '../components/UserBadge'
@@ -18,16 +17,22 @@ export default function Home() {
       const email = data.session.user.email
       const name = data.session.user.user_metadata?.full_name || email.split('@')[0]
 
-      // busca ou cria código
-      let { data: perfil } = await supabaseAdmin.from('usuarios').select('*').eq('email', email).single()
+      // busca ou cria código - AGORA USANDO CLIENTE PÚBLICO
+      let { data: perfil } = await supabase.from('usuarios').select('*').eq('email', email).single()
+
       if (!perfil) {
         const novoCodigo = generateUniqueCode(name)
-        const { data: inserted } = await supabaseAdmin.from('usuarios').insert({
+        const { data: inserted, error } = await supabase.from('usuarios').insert({
           email,
           nome: name,
           codigo_unico: novoCodigo,
           avatar_url: data.session.user.user_metadata?.avatar_url
         }).select().single()
+
+        if (error) {
+          console.error('Erro ao criar usuário:', error)
+          return
+        }
         perfil = inserted
       }
       setCodigo(perfil.codigo_unico)
