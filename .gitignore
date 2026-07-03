@@ -1,0 +1,42 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# build
+/build
+/dist
+
+# misc
+.DS_Store
+*.pem
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env - MUITO IMPORTANTE (suas chaves Supabase ficam aqui)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# supabase local
+.supabase
