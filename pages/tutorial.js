@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Sidebar from '../components/Sidebar'
 import UserBadge from '../components/UserBadge'
 import { supabase } from '../lib/supabaseClient'
 import { motion } from 'framer-motion'
 
 const comandos = [
-  { cod: '#@', nome: 'Localizar', desc: 'Encontra valor ou célula', ex: '/e-resai/#@ → depois /<agua>' },
+  { cod: '#@', nome: 'Localizar', desc: 'Encontra valor ou célula', ex: '/e-resai/#@' },
   { cod: '0@', nome: 'Apagar', desc: 'Apaga conteúdo da célula', ex: '/e-resai/0@' },
   { cod: '00@', nome: 'Limpar', desc: 'Limpa formatação', ex: '/e-resai/00@' },
   { cod: '1@', nome: 'Cor fundo', desc: 'Altera cor de fundo', ex: '/e-resai/1@' },
@@ -22,7 +22,7 @@ export default function Tutorial() {
   const [user, setUser] = useState(null)
   const [codigo, setCodigo] = useState('')
 
-  useState(() => {
+  useEffect(() => {
     supabase.auth.getSession().then(({data}) => {
       if (!data.session) window.location.href = '/login'
       else {
@@ -40,11 +40,12 @@ export default function Tutorial() {
       <main className="p-4 md:p-10 pt-20 md:pt-10">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Tutorial</h1>
-          <p className="opacity-70 mb-8">Todos os comandos que a IA pode executar</p>
+          <p className="opacity-70 mb-2">Todos os comandos que a IA pode executar</p>
+          <p className="text-sm mb-8">Link do tutorial para IA: <code className="text-primary cursor-pointer" onClick={()=>copy('/e-resai/tutorial')}>{process.env.NEXT_PUBLIC_BASE_URL}/api/{codigo}/e-resai/tutorial</code></p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {comandos.map((c,i) => (
-              <motion.div key={c.cod} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:i*0.03}} className="glass p-5 rounded-2xl hover:bg-white/[0.07] transition cursor-pointer group" onClick={()=>copy(c.ex.split(' ')[0])}>
+              <motion.div key={c.cod} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:i*0.03}} className="glass p-5 rounded-2xl hover:bg-white/[0.07] transition cursor-pointer group" onClick={()=>copy(c.ex)}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-mono text-primary font-bold">{c.cod}</div>
@@ -56,16 +57,6 @@ export default function Tutorial() {
                 <code className="text-[11px] opacity-50 mt-3 block">{c.ex}</code>
               </motion.div>
             ))}
-          </div>
-
-          <div className="glass p-6 rounded-2xl mt-8">
-            <h3 className="font-semibold mb-3">Exemplo real</h3>
-            <div className="space-y-2 text-sm font-mono">
-              <div>IA: <span className="text-primary">/e-resai/#@</span></div>
-              <div>Servidor: qual valor procura?</div>
-              <div>IA: <span className="text-primary">/&lt;agua&gt;</span></div>
-              <div>Servidor: o valor "agua" ta na celula "d1"</div>
-            </div>
           </div>
         </div>
       </main>
