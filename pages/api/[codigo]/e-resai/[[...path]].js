@@ -97,16 +97,28 @@ servidor: valor "Produtos" foi definido na celula "A1"
 `)
   }
 
-  if (!sheetId) return res.send(respostas['##@'])
-  if (cmd &&!params.length && respostas[cmd]) return res.send(respostas[cmd])
-
   const { data: user } = await supabase.from('usuarios').select('google_token').eq('codigo_unico', codigo).single()
-  if (!user?.google_token) return res.status(401).send('Código inválido ou faça login')
+  if (!user?.google_token) return res.status(401).send('ERRO: faça login no site')
 
   const token = user.google_token
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
 
   try {
+    // ##@ AGORA LISTA DE VERDADE
+    if (sheetPart === '##@' || cmd === '##@') {
+      const r = await fetch(`https://www.googleapis.com/drive/v3/files?q=mimeType='application/vnd.google-apps.spreadsheet'&fields=files(id,name)&pageSize=50&orderBy=modifiedTime desc`, { headers })
+      const data = await r.json()
+
+      if (!data.files?.length) return res.send('Nenhuma planilha encontrada')
+
+      const lista = data.files.map(f => `${f.name} | ${f.id}@`).join('\n')
+      return res.send(`PLANILHAS ENCONTRADAS:\n${lista}`)
+    }
+
+    if (!sheetId) return res.send(respostas['##@'])
+    if (cmd &&!params.length && respostas[cmd]) return res.send(respostas[cmd])
+
+    // #@ BUSCAR
     if (cmd === '#@' && params[0]) {
       const valor = params[0].replace(/[<>]/g, '')
       const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A1:Z1000`, { headers })
@@ -118,20 +130,14 @@ servidor: valor "Produtos" foi definido na celula "A1"
       return res.send(achados.length? `o valor "${valor}" ta na celula "${achados[0]}"` : 'não encontrado')
     }
 
+    // 0@ / 00@
     if ((cmd === '0@' || cmd === '00@') && params[0]) {
       const cel = params[0].replace(/[<>]/g, '')
       await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${cel}:clear`, { method:'POST', headers })
       return res.send(`célula "${cel}" ${cmd==='0@'?'apagada':'limpa'} com sucesso`)
     }
 
-    if (cmd === '1@' && params[0]) {
-      return res.send(`cor de fundo da celula "${params[0].replace(/[<>]/g,'')}" alterada com sucesso`)
-    }
-
-    if (cmd === '11@' && params[0]) {
-      return res.send(`cor do texto da celula "${params[0].replace(/[<>]/g,'')}" alterado com susseço`)
-    }
-
+    // ESCREVER
     if (cmd?.startsWith('<') && params[0]) {
       const cel = cmd.replace(/[<>]/g, '')
       const valor = params[0].replace(/[<>]/g, '')
@@ -141,8 +147,9 @@ servidor: valor "Produtos" foi definido na celula "A1"
       return res.send(`valor "${valor}" foi definido na celula "${cel}"`)
     }
 
-    return res.send(respostas[cmd] || `e-resai recebido: ${cmd}`)
+    return res.send(respostas[cmd] || `comando ${cmd} recebido`)
+
   } catch (e) {
-    return res.send('Acho que ocorreu problemas tecnicos, por favor tente novamente.')
+    return res.send(`ERRO: ${e.message}`)
   }
 }
