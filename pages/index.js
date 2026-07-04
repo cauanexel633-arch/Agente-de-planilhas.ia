@@ -40,11 +40,11 @@ export default function Home() {
   const base = process.env.NEXT_PUBLIC_BASE_URL
   const codigoSafe = encodeURIComponent(codigo)
   const linkTeste = `${base}/api/${codigoSafe}/e-res/teste`
-  const linkTutorial = `${base}/api/${codigoSafe}/e-resai/#@`
+  const linkTutorial = `${base}/api/${codigoSafe}/e-resai/tutorial`
 
   const prompts = {
     teste: `você executará esse link de teste, e me retornará o que tiver no site, ${linkTeste}`,
-    tutorial: `você vai usar este servidor para controlar planilhas. Primeiro execute: ${linkTutorial} e me diga o que retornar`
+    tutorial: `você vai usar este servidor para entender como funciona as logicas e comando/link. Primeiro execute: ${linkTutorial}`
   }
 
   const copy = (t) => navigator.clipboard.writeText(t)
