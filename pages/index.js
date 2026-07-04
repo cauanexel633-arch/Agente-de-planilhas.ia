@@ -33,7 +33,10 @@ export default function Home() {
       }
       setCodigo(perfil.codigo_unico)
 
-      fetch(`/api/${perfil.codigo_unico}/e-res/teste`)
+      // CORREÇÃO: codifica o código para URLs
+      const codigoSafe = encodeURIComponent(perfil.codigo_unico)
+      const base = process.env.NEXT_PUBLIC_BASE_URL
+      fetch(`${base}/api/${codigoSafe}/e-res/teste`)
        .then(r => r.ok? setStatus('online') : setStatus('erro'))
        .catch(() => setStatus('offline'))
     })
@@ -42,7 +45,8 @@ export default function Home() {
   if (!user) return null
 
   const base = process.env.NEXT_PUBLIC_BASE_URL
-  const testLink = `${base}/api/${codigo}/e-res/teste`
+  const codigoSafe = encodeURIComponent(codigo)
+  const testLink = `${base}/api/${codigoSafe}/e-res/teste`
   const prompt = `você executará esse link de teste, e me retornará o que tiver no site, ${testLink}`
 
   const copy = (text) => {
@@ -54,41 +58,43 @@ export default function Home() {
   return (
     <div className="md:ml-56 min-h-screen bg-dark">
       <Sidebar codigo={codigo} />
-      <main className="p-4 md:p-10 pt-20 md:pt-10">
-        <motion.h1 initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} className="text-4xl font-bold mb-2">
-          Agente de Planilhas IA
-        </motion.h1>
-        <p className="opacity-70 mb-8">Conecte qualquer IA às suas planilhas Google em 1 clique</p>
+      <main className="p-4 md:p-10 lg:p-14 pt-20 md:pt-10">
+        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} className="max-w-7xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-bold mb-3 tracking-tight">
+            Agente de Planilhas IA
+          </h1>
+          <p className="opacity-70 mb-10 md:mb-14 text-base md:text-lg">Conecte qualquer IA às suas planilhas Google em 1 clique</p>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl">
-          <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.1}} className="glass p-6 rounded-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Link de teste</h2>
-              <span className={`text-xs px-2 py-1 rounded ${status==='online'?'bg-green-500/20 text-green-400':'bg-yellow-500/20'}`}>{status}</span>
-            </div>
-            <code className="bg-black/40 p-3 rounded block break-all text-sm">{testLink}</code>
-            <div className="flex gap-2 mt-4">
-              <button onClick={()=>copy(testLink)} className="px-4 py-2 bg-primary rounded-lg hover:opacity-90 transition">{copied?'Copiado!':'Copiar link'}</button>
-              <Link href={testLink} target="_blank" className="px-4 py-2 glass rounded-lg">Abrir</Link>
-            </div>
+          <div className="grid lg:grid-cols-2 gap-6 xl:gap-8">
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.1}} className="glass p-7 md:p-8 rounded-3xl">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-xl md:text-2xl font-semibold">Link de teste</h2>
+                <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${status==='online'?'bg-green-500/20 text-green-400 border-green-500/30':'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>{status}</span>
+              </div>
+              <code className="bg-black/50 p-4 rounded-xl block break-all text-[13px] leading-relaxed border border-white/5">{testLink}</code>
+              <div className="flex gap-3 mt-5">
+                <button onClick={()=>copy(testLink)} className="px-5 py-2.5 bg-primary rounded-xl hover:opacity-90 transition font-medium text-sm">{copied?'Copiado!':'Copiar link'}</button>
+                <Link href={testLink} target="_blank" className="px-5 py-2.5 glass rounded-xl hover:bg-white/10 transition text-sm">Abrir</Link>
+              </div>
+            </motion.div>
+
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.2}} className="glass p-7 md:p-8 rounded-3xl">
+              <h2 className="text-xl md:text-2xl font-semibold mb-4">Prompt para IA</h2>
+              <p className="text-sm opacity-70 mb-4">Cole isso no ChatGPT, Meta AI, Claude...</p>
+              <div className="bg-black/50 p-4 rounded-xl text-[13px] leading-relaxed border border-white/5">{prompt}</div>
+              <button onClick={()=>copy(prompt)} className="mt-5 w-full px-5 py-2.5 glass rounded-xl hover:bg-white/10 transition text-sm font-medium">Copiar prompt</button>
+            </motion.div>
+          </div>
+
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.3}} className="glass p-7 md:p-8 rounded-3xl mt-8">
+            <h3 className="font-semibold text-lg mb-4">Como funciona</h3>
+            <ol className="grid md:grid-cols-2 gap-3 text-sm opacity-80">
+              <li className="flex gap-3"><span className="text-primary font-bold">1.</span> Faça login com Google (já feito)</li>
+              <li className="flex gap-3"><span className="text-primary font-bold">2.</span> Copie o link de teste acima</li>
+              <li className="flex gap-3"><span className="text-primary font-bold">3.</span> Cole na IA com o prompt</li>
+              <li className="flex gap-3"><span className="text-primary font-bold">4.</span> Use: #@ buscar, 11@ cor texto, 1@ cor fundo</li>
+            </ol>
           </motion.div>
-
-          <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.2}} className="glass p-6 rounded-2xl">
-            <h2 className="text-xl font-semibold mb-4">Prompt para IA</h2>
-            <p className="text-sm opacity-80 mb-3">Cole isso no ChatGPT, Meta AI, Claude...</p>
-            <div className="bg-black/40 p-3 rounded text-sm">{prompt}</div>
-            <button onClick={()=>copy(prompt)} className="mt-4 px-4 py-2 glass rounded-lg w-full">Copiar prompt</button>
-          </motion.div>
-        </div>
-
-        <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.3}} className="glass p-6 rounded-2xl mt-6 max-w-5xl">
-          <h3 className="font-semibold mb-3">Como funciona</h3>
-          <ol className="list-decimal ml-5 space-y-1 text-sm opacity-80">
-            <li>Faça login com Google (já feito)</li>
-            <li>Copie o link de teste acima</li>
-            <li>Cole na IA com o prompt</li>
-            <li>Use os códigos: #@ buscar, 11@ cor texto, 1@ cor fundo...</li>
-          </ol>
         </motion.div>
       </main>
       <UserBadge user={user} />
