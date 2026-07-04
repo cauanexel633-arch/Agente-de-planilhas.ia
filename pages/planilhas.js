@@ -9,11 +9,16 @@ export default function Planilhas() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({data}) => {
-      if (!data.session) window.location.href = '/login'
-      else {
-        setUser(data.session.user)
-        supabase.from('usuarios').select('codigo_unico').eq('email', data.session.user.email).single().then(({data}) => setCodigo(data?.codigo_unico))
+      if (!data.session) {
+        window.location.href = '/login'
+        return
       }
+      setUser(data.session.user)
+      supabase.from('usuarios')
+        .select('codigo_unico')
+        .eq('email', data.session.user.email)
+        .single()
+        .then(({data}) => setCodigo(data?.codigo_unico))
     })
   }, [])
 
@@ -32,14 +37,22 @@ export default function Planilhas() {
 
           <div className="glass rounded-2xl overflow-hidden">
             {sheets.map(s => (
-              <div key={s.id} className="p-4 flex items-center justify-between hover:bg-white/5 border-b border-white/5 last:border-0">
+              <div 
+                key={s.id} 
+                className="p-4 flex items-center justify-between hover:bg-white/5 border-b border-white/5 last:border-0"
+              >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-green-500/20 rounded-lg grid place-items-center">📊</div>
+                  <div className="w-9 h-9 bg-green-500/20 rounded-lg grid place-items-center">
+                    📊
+                  </div>
                   <div>
                     <div className="font-medium">{s.nome}</div>
                     <div className="text-xs opacity-60">{s.ultima}</div>
                   </div>
-                <button className="text-xs px-3 py-1.5 glass rounded-lg hover:bg-white/10">Usar com IA</button>
+                </div>
+                <button className="text-xs px-3 py-1.5 glass rounded-lg hover:bg-white/10">
+                  Usar com IA
+                </button>
               </div>
             ))}
           </div>
