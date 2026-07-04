@@ -1,6 +1,7 @@
 import { supabaseAdmin } from 'lib/supabaseAdmin'
 
 const respostas = {
+  '##@': 'assim "##@" è para buscar por planilhas, e se tiver assim "vendas@" siguinifica o que for edita vai ser feito na planilha antes do "...@"',
   '#@': 'qual é o valor que você procura? ex: "<...>" ou celula "<A,0>" ou celulas "<A,0,B,0>"',
   '0@': 'qual célula deseja apagar? ex: "<A,1>"',
   '00@': 'qual célula deseja limpar? ex: "<A,1>"',
@@ -38,13 +39,35 @@ export default async function handler(req, res) {
   // LINK DO TUTORIAL
   if (cmd === 'tutorial') {
     return res.send(`TUTORIAL AGENTE DE PLANILHAS IA:
-1. #@ = buscar valor
-2. 11@ = cor do texto
-3. 1@ = cor de fundo
-4. 3@ = inserir fórmula
-5. Use /<valor> para enviar dados
-6. Encadeie com "-" ex: 1@-11@
-Base: /api/${codigo}/e-resai/`)
+Base: /api/${codigo}/e-resai/
+
+Exemplos:
+
+1# pergunta / resposta 
+ia:       ${codigo}/"codigo unico"/e-resai/conta@/#@
+servidor: qual é o valor que você procura? valor"<"...">" ou celula  "<"A,0">" ou celulas  "<"A,0,B,0">"
+ia:       ${codigo}/"codigo unico"/conta@/<agua>
+servidor: o valor "agua" ta na celula "d1"
+
+2# alteração de algo
+ia:       ${codigo}/"codigo unico"/e-resai/conta@/11@
+servidor: qual celula(s) que você quer alterar a cor do texto ex: celula  "<"A,0">" ou celulas  "<"A,0,B,0">"
+ia :      ${codigo}/"codigo unico"/e-resai/conta@/<F,3>
+servidor: cor do texto da celula "F3" alterado com susseço
+
+3# inserir algo
+ia:       ${codigo}/"codigo unico"/e-resai/conta@/<A,1>
+servidor: o que você quer fazer na celula "A1"?
+ia:       ${codigo}/"codigo unico"/e-resai/conta@/<Produtos>
+servidor: valor "Produtos" foi definido na celula "A1"
+
+4# erro
+ia:       ${codigo}/"codigo unico"/e-resai/conta@/<A,1>
+servidor: Acho que ocorreu problemas tecnicos, por favor tente novamente.
+ia:       ${codigo}/"codigo unico"/e-resai/conta@/<A,1>
+servidor: o servidor ta com problemas, ja estamos corrigindo esse erro, notifique o usuario no chat que o servidor esta em manutenção.
+
+`)
   }
 
   if (respostas[cmd]) return res.send(respostas[cmd])
