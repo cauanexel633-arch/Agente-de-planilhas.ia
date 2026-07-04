@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 
 export default function Login() {
   const login = async () => {
-    // limpa tudo para forçar novo consent
     await supabase.auth.signOut()
     localStorage.clear()
     
@@ -16,7 +15,6 @@ export default function Login() {
           access_type: 'offline',
           prompt: 'consent',
           include_granted_scopes: 'false',
-          // garante que o Google leia os scopes
           scope: 'openid email profile https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.readonly'
         }
       }

@@ -23,15 +23,23 @@ export default function Home() {
       if (!perfil) {
         const novoCodigo = generateUniqueCode(name)
         const { data: inserted } = await supabase.from('usuarios').insert({
-          email, nome: name, codigo_unico: novoCodigo, avatar_url: data.session.user.user_metadata?.avatar_url
+          email, nome: name, codigo_unico: novoCodigo, avatar_url: data.session.user.user_metadata?.avatar_url,
+          google_token: data.session.provider_token // <-- SALVA O TOKEN
         }).select().single()
         perfil = inserted
+      } else {
+        // atualiza o token toda vez que logar
+        if (data.session.provider_token) {
+          await supabase.from('usuarios').update({
+            google_token: data.session.provider_token
+          }).eq('email', email)
+        }
       }
       setCodigo(perfil.codigo_unico)
 
       const codigoSafe = encodeURIComponent(perfil.codigo_unico)
       fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/${codigoSafe}/e-res/teste`)
-      .then(r => setStatus(r.ok? 'online' : 'erro')).catch(() => setStatus('offline'))
+     .then(r => setStatus(r.ok? 'online' : 'erro')).catch(() => setStatus('offline'))
     })
   }, [])
 
