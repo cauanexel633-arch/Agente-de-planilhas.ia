@@ -41,7 +41,32 @@ export default async function handler(req, res) {
     return res.send(`TUTORIAL AGENTE DE PLANILHAS IA:
 Base: /api/${codigo}/e-resai/
 
-Exemplos:
+##@': 'assim "##@" è para buscar por planilhas, e se tiver assim "vendas@" siguinifica o que for edita vai ser feito na planilha antes do "...@"
+#@ = localizar iten na celela e etc
+0@ = apagar 
+00@ = limpar celula
+1@ = alterar cor de fundo
+11@ = alterar cor da texto
+2@ = alterar tamanho da texto
+22@ = alterar formato do texto (negrito,italico,...)
+222@ = alterar fonte do texto
+3@ = formulas
+33@ = funções
+4@ = borda
+5@ = meclagem
+6@ = alinhar ECD (esquerdo,centro,direito)
+66@ = alinhar SMI (superior,meio,inferior)
+7@ = ajuste de texto (exceder,ajustar,cortar)
+8@ = rotação do texto
+9@ = inserir link
+99@ = inserir comentario
+999@ = inserir grafico 
+10@ = criar filtro
+11@ = inserir caixa de seleção
+12@ = inserir lista suspensa 
+13@ = inserir pagina
+
+ Exemplos:
 
 1# pergunta / resposta 
 ia:       ${codigo}/"codigo unico"/e-resai/conta@/#@
